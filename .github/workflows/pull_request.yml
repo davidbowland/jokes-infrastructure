@@ -1,0 +1,41 @@
+# Preview the changes this pull request will effect
+name: Preview dbowland.com infrastructure
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  preview:
+    name: Preview infrastructure
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout latest code
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      # Install Node 16
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+      # Set up AWS credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      # Install Pulumi CLI
+      - name: Install Pulumi CLI
+        uses: pulumi/action-install-pulumi-cli@v1
+      # Install dependencies
+      - run: npm ci --production
+      # Execute Pulumi preview
+      - uses: pulumi/actions@v3
+        with:
+          command: preview
+          stack-name: dev
+          work-dir: ./src/
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}

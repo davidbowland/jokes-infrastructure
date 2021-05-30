@@ -1,47 +1,59 @@
 import * as awsx from '@pulumi/awsx'
 
-import {
-  zip_v1_jokes_get_handler,
-  zip_v1_jokes_get_single_handler,
-  zip_v1_jokes_random_handler,
-  zip_v1_jokes_post_handler,
-  zip_v1_jokes_put_handler,
-  zip_v1_jokes_delete_handler,
-} from '../lambda/functions'
+import { zip_v1_jokes_handler } from '../lambda/functions'
+import { resourceById, resourcePlain, resourceRandom } from '../vars'
 
 // https://www.pulumi.com/docs/reference/pkg/aws/apigateway/
 
 export const api = new awsx.apigateway.API('joke-api', {
   routes: [
+    // By ID
     {
-      path: '/v1/jokes',
+      path: resourceById,
       method: 'GET',
-      eventHandler: zip_v1_jokes_get_handler,
+      eventHandler: zip_v1_jokes_handler,
     },
     {
-      path: '/v1/jokes/{jokeId}',
-      method: 'GET',
-      eventHandler: zip_v1_jokes_get_single_handler,
-    },
-    {
-      path: '/v1/jokes/random',
-      method: 'GET',
-      eventHandler: zip_v1_jokes_random_handler,
-    },
-    {
-      path: '/v1/jokes',
-      method: 'POST',
-      eventHandler: zip_v1_jokes_post_handler,
-    },
-    {
-      path: '/v1/jokes/{jokeId}',
+      path: resourceById,
       method: 'PUT',
-      eventHandler: zip_v1_jokes_put_handler,
+      eventHandler: zip_v1_jokes_handler,
     },
     {
-      path: '/v1/jokes/{jokeId}',
+      path: resourceById,
       method: 'DELETE',
-      eventHandler: zip_v1_jokes_delete_handler,
+      eventHandler: zip_v1_jokes_handler,
+    },
+    {
+      path: resourceById,
+      method: 'OPTIONS',
+      eventHandler: zip_v1_jokes_handler,
+    },
+    // Plain
+    {
+      path: resourcePlain,
+      method: 'GET',
+      eventHandler: zip_v1_jokes_handler,
+    },
+    {
+      path: resourcePlain,
+      method: 'POST',
+      eventHandler: zip_v1_jokes_handler,
+    },
+    {
+      path: resourcePlain,
+      method: 'OPTIONS',
+      eventHandler: zip_v1_jokes_handler,
+    },
+    // Random
+    {
+      path: resourceRandom,
+      method: 'GET',
+      eventHandler: zip_v1_jokes_handler,
+    },
+    {
+      path: resourceRandom,
+      method: 'OPTIONS',
+      eventHandler: zip_v1_jokes_handler,
     },
   ],
 })

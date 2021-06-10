@@ -1,6 +1,7 @@
 import * as aws from '@pulumi/aws'
 import * as pulumi from '@pulumi/pulumi'
 
+import { getV1JokesHandlerVersion } from '../aws-vars'
 import { joke_lambda_role } from '../iam/roles'
 import { dbowland_jokes_table } from '../dynamodb/tables'
 import {
@@ -17,9 +18,6 @@ import {
 } from '../vars'
 
 export const zip_v1_jokes_handler = new aws.lambda.Function('zip-v1-jokes-handler', {
-  code: new pulumi.asset.AssetArchive({
-    '.': new pulumi.asset.FileArchive(`${__dirname}/v1-jokes-handler`),
-  }),
   environment: {
     variables: {
       CORS_ORIGINS: corsOrigins,
@@ -36,6 +34,9 @@ export const zip_v1_jokes_handler = new aws.lambda.Function('zip-v1-jokes-handle
   name: 'v1-jokes-handler',
   role: joke_lambda_role.arn,
   runtime: aws.lambda.Runtime.NodeJS14dX,
+  s3Bucket: 'dbowland-lambda-source',
+  s3Key: 'v1-jokes-handler.zip',
+  s3ObjectVersion: getV1JokesHandlerVersion(),
   timeout: lambdaTimeoutInSeconds,
   tags: {
     'created-by': createdBy,

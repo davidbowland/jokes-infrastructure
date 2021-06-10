@@ -43,5 +43,13 @@
     "**/*": [
       "prettier --write --ignore-unknown"
     ]
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidbowland/dbowland-pulumi-jokes.git"
+  },
+  "bugs": {
+    "url": "https://github.com/davidbowland/dbowland-pulumi-jokes/issues"
+  },
+  "homepage": "https://github.com/davidbowland/dbowland-pulumi-jokes#readme"
 }

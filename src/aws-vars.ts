@@ -6,8 +6,7 @@ export const getV1JokesHandlerVersion = async (): Promise<string> => {
   const v1JokesHandlerParams = {
     Bucket: 'dbowland-lambda-source',
     Key: 'v1-jokes-handler.zip',
-    Range: 'bytes=0-0',
   }
-  const response = await s3.getObject(v1JokesHandlerParams).promise()
+  const response = await s3.headObject(v1JokesHandlerParams).promise()
   return response.VersionId ?? ''
 }

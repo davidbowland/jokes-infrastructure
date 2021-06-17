@@ -66,7 +66,7 @@ Preview the changes the local code will make with:
 npm run preview
 ```
 
-If the `administrator` profile is not available, this command will fail.
+If the `developer` profile is not available, this command will fail.
 
 ### Deploying to Production
 

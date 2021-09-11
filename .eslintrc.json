@@ -11,11 +11,12 @@
   },
   "plugins": ["@typescript-eslint"],
   "rules": {
+    "@typescript-eslint/no-unused-vars": ["error", { "varsIgnorePattern": "_" }],
+    "@typescript-eslint/no-explicit-any": ["off"],
     "indent": ["error", 2],
     "linebreak-style": ["error", "unix"],
     "quotes": ["error", "single", { "avoidEscape": true }],
-    "semi": ["error", "never"],
-    "@typescript-eslint/no-unused-vars": "off"
+    "semi": ["error", "never"]
   },
   "globals": {
     "module": "readonly"

@@ -1,8 +1,8 @@
 {
-  "name": "dbowland-pulumi-jokes",
-  "version": "1.6.0",
+  "name": "jokes-infrastrcuture",
+  "version": "1.0.0",
   "private": true,
-  "description": "dbowland.com development infrastructure",
+  "description": "Infrastructure for jokes project",
   "author": "David Bowland",
   "engines": {
     "node": "^16.0.0"
@@ -41,10 +41,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/davidbowland/dbowland-pulumi-jokes.git"
+    "url": "git+https://github.com/davidbowland/jokes-infrastructure.git"
   },
   "bugs": {
-    "url": "https://github.com/davidbowland/dbowland-pulumi-jokes/issues"
+    "url": "https://github.com/davidbowland/jokes-infrastructure/issues"
   },
-  "homepage": "https://github.com/davidbowland/dbowland-pulumi-jokes#readme"
+  "homepage": "https://github.com/davidbowland/jokes-infrastructure#readme"
 }

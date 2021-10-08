@@ -4,7 +4,7 @@ import { createdBy, createdFor } from '../vars'
 
 //www.pulumi.com/docs/reference/pkg/aws/cognito/userpool/
 
-export const jokes_users_user_pool = new aws.cognito.UserPool('jokes-users', {
+export const cognitoUserPool = new aws.cognito.UserPool('users', {
   adminCreateUserConfig: {
     allowAdminCreateUserOnly: true,
   },

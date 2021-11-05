@@ -4,26 +4,6 @@ import { createdBy, createdFor } from '../vars'
 
 // https://www.pulumi.com/docs/reference/pkg/aws/s3/bucket/
 
-export const codePipelineArtifactBucket = new aws.s3.Bucket('ecs-artifact', {
-  acl: 'private',
-  bucket: 'jokes-ecs-artifacts',
-  serverSideEncryptionConfiguration: {
-    rule: {
-      applyServerSideEncryptionByDefault: {
-        sseAlgorithm: 'AES256',
-      },
-      bucketKeyEnabled: false,
-    },
-  },
-  tags: {
-    'created-by': createdBy,
-    'created-for': createdFor,
-  },
-  versioning: {
-    enabled: false,
-  },
-})
-
 export const codePipelineSourceBucket = new aws.s3.Bucket('ecs-deploy', {
   acl: 'private',
   bucket: 'jokes-ecs-deploy',

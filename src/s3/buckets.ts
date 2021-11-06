@@ -4,7 +4,35 @@ import { createdBy, createdFor } from '../vars'
 
 // https://www.pulumi.com/docs/reference/pkg/aws/s3/bucket/
 
-export const jokes_lambda_source_bucket = new aws.s3.Bucket('jokes-lambda-source', {
+export const codePipelineSourceBucket = new aws.s3.Bucket('ecs-deploy', {
+  acl: 'private',
+  bucket: 'jokes-ecs-deploy',
+  lifecycleRules: [
+    {
+      enabled: true,
+      noncurrentVersionExpiration: {
+        days: 15,
+      },
+    },
+  ],
+  serverSideEncryptionConfiguration: {
+    rule: {
+      applyServerSideEncryptionByDefault: {
+        sseAlgorithm: 'AES256',
+      },
+      bucketKeyEnabled: false,
+    },
+  },
+  tags: {
+    'created-by': createdBy,
+    'created-for': createdFor,
+  },
+  versioning: {
+    enabled: true,
+  },
+})
+
+export const lambdaSourceBucket = new aws.s3.Bucket('lambda-source', {
   acl: 'private',
   bucket: 'jokes-lambda-source',
   lifecycleRules: [
@@ -15,16 +43,24 @@ export const jokes_lambda_source_bucket = new aws.s3.Bucket('jokes-lambda-source
       },
     },
   ],
-  versioning: {
-    enabled: true,
+  serverSideEncryptionConfiguration: {
+    rule: {
+      applyServerSideEncryptionByDefault: {
+        sseAlgorithm: 'AES256',
+      },
+      bucketKeyEnabled: false,
+    },
   },
   tags: {
     'created-by': createdBy,
     'created-for': createdFor,
   },
+  versioning: {
+    enabled: true,
+  },
 })
 
-export const jokes_logs_bucket = new aws.s3.Bucket('jokes-logs', {
+export const logsBucket = new aws.s3.Bucket('logs', {
   acl: 'private',
   bucket: 'jokes-logs',
   lifecycleRules: [
@@ -35,16 +71,24 @@ export const jokes_logs_bucket = new aws.s3.Bucket('jokes-logs', {
       },
     },
   ],
-  versioning: {
-    enabled: true,
+  serverSideEncryptionConfiguration: {
+    rule: {
+      applyServerSideEncryptionByDefault: {
+        sseAlgorithm: 'AES256',
+      },
+      bucketKeyEnabled: false,
+    },
   },
   tags: {
     'created-by': createdBy,
     'created-for': createdFor,
   },
+  versioning: {
+    enabled: true,
+  },
 })
 
-export const jokes_ui_source_bucket = new aws.s3.Bucket('jokes-ui-source', {
+export const uiSourceBucket = new aws.s3.Bucket('ui-source', {
   acl: 'public-read',
   bucket: 'jokes-ui-source',
   lifecycleRules: [
@@ -55,11 +99,19 @@ export const jokes_ui_source_bucket = new aws.s3.Bucket('jokes-ui-source', {
       },
     },
   ],
-  versioning: {
-    enabled: true,
+  serverSideEncryptionConfiguration: {
+    rule: {
+      applyServerSideEncryptionByDefault: {
+        sseAlgorithm: 'AES256',
+      },
+      bucketKeyEnabled: false,
+    },
   },
   tags: {
     'created-by': createdBy,
     'created-for': createdFor,
+  },
+  versioning: {
+    enabled: true,
   },
 })

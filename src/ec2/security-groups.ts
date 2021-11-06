@@ -12,19 +12,3 @@ export const securityGroup = new awsx.ec2.SecurityGroup('security-group', {
   },
   vpc,
 })
-
-awsx.ec2.SecurityGroupRule.egress(
-  'all-access',
-  securityGroup,
-  new awsx.ec2.AnyIPv4Location(),
-  new awsx.ec2.AllTcpPorts(),
-  'allow all access'
-)
-
-awsx.ec2.SecurityGroupRule.ingress(
-  'http-access',
-  securityGroup,
-  new awsx.ec2.AnyIPv4Location(),
-  new awsx.ec2.TcpPorts(80),
-  'allow http access'
-)

@@ -1,5 +1,5 @@
 // Import modules to create resources
-import './cognito/index'
-import './ec2/index'
-import './s3/index'
-import './ses/index'
+import './cognito'
+import './ec2'
+import './s3'
+import './ses'

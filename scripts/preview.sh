@@ -11,5 +11,4 @@ fi
 npm run lint
 
 # Generate a preview of what will change
-cd src/
 pulumi preview -s dev

@@ -11,5 +11,4 @@ fi
 npm run lint
 
 # This command generates a preview and gives a prompt before pushing changes
-cd src/
 pulumi up -s dev

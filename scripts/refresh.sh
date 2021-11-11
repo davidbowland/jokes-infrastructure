@@ -8,5 +8,4 @@ if [[ -z "$1" ]]; then
 fi
 
 # Refresh state with infrastructure
-cd src/
 pulumi refresh -s dev

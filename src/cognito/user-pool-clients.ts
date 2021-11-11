@@ -1,7 +1,7 @@
 import * as aws from '@pulumi/aws'
 
 import { cognitoUserPool } from './user-pools'
-import { cloudFrontOrigin, defaultOrigin } from '../vars'
+import { cloudFrontOrigin, defaultOrigin } from '@vars'
 
 // https://www.pulumi.com/docs/reference/pkg/aws/cognito/userpoolclient/
 

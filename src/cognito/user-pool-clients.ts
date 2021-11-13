@@ -1,6 +1,6 @@
 import * as aws from '@pulumi/aws'
 
-import { cognitoUserPool } from './user-pools'
+import { userPool } from './user-pools'
 import { cloudFrontOrigin, defaultOrigin } from '@vars'
 
 // https://www.pulumi.com/docs/reference/pkg/aws/cognito/userpoolclient/
@@ -22,5 +22,5 @@ export const clientUserPoolClient = new aws.cognito.UserPoolClient('client', {
   preventUserExistenceErrors: 'ENABLED',
   supportedIdentityProviders: ['COGNITO'],
   ...tokenValidity,
-  userPoolId: cognitoUserPool.id,
+  userPoolId: userPool.id,
 })

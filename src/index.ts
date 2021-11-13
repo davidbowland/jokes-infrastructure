@@ -1,4 +1,4 @@
-import './cognito'
-import './ec2'
-import './s3'
-import './ses'
+export * from '@cognito'
+export * from '@ec2'
+export * from '@s3'
+export * from '@ses'

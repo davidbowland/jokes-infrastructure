@@ -2,4 +2,4 @@
 import './config'
 
 // Import modules to create resources
-import './src/index'
+import './src'

@@ -1,2 +1,2 @@
-import './security-groups'
-import './vpcs'
+export * from './security-groups'
+export * from './vpcs'

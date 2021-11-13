@@ -1,1 +1,1 @@
-import './email-identity'
+export * from './email-identity'

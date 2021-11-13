@@ -2,4 +2,8 @@
 import './config'
 
 // Import modules to create resources
-import './src'
+import { userPool } from './src'
+
+// Output
+
+export const cognitoUserPoolEndpoint = `https://${userPool.endpoint}`

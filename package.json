@@ -1,6 +1,6 @@
 {
   "name": "jokes-infrastrcuture",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "private": true,
   "description": "Infrastructure for jokes project",
   "author": "David Bowland",

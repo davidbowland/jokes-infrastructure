@@ -60,34 +60,6 @@ export const lambdaSourceBucket = new aws.s3.Bucket('lambda-source', {
   },
 })
 
-export const logsBucket = new aws.s3.Bucket('logs', {
-  acl: 'private',
-  bucket: `${projectName}-logs`,
-  lifecycleRules: [
-    {
-      enabled: true,
-      noncurrentVersionExpiration: {
-        days: 15,
-      },
-    },
-  ],
-  serverSideEncryptionConfiguration: {
-    rule: {
-      applyServerSideEncryptionByDefault: {
-        sseAlgorithm: 'AES256',
-      },
-      bucketKeyEnabled: false,
-    },
-  },
-  tags: {
-    'created-by': createdBy,
-    'created-for': createdFor,
-  },
-  versioning: {
-    enabled: true,
-  },
-})
-
 export const uiSourceBucket = new aws.s3.Bucket('ui-source', {
   acl: 'public-read',
   bucket: `${projectName}-ui-source`,

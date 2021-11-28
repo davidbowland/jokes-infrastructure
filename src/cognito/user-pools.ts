@@ -1,6 +1,6 @@
 import * as aws from '@pulumi/aws'
 
-import { createdBy, createdFor } from '@vars'
+import { createdBy, createdFor, projectName } from '@vars'
 
 //www.pulumi.com/docs/reference/pkg/aws/cognito/userpool/
 
@@ -21,7 +21,7 @@ export const userPool = new aws.cognito.UserPool('users', {
     deviceOnlyRememberedOnUserPrompt: true,
   },
   mfaConfiguration: 'OPTIONAL',
-  name: 'jokes-users',
+  name: `${projectName}-users`,
   passwordPolicy: {
     minimumLength: 12,
     requireLowercase: false,

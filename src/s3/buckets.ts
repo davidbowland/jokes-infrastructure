@@ -1,12 +1,12 @@
 import * as aws from '@pulumi/aws'
 
-import { createdBy, createdFor } from '@vars'
+import { createdBy, createdFor, projectName } from '@vars'
 
 // https://www.pulumi.com/docs/reference/pkg/aws/s3/bucket/
 
 export const codePipelineSourceBucket = new aws.s3.Bucket('ecs-deploy', {
   acl: 'private',
-  bucket: 'jokes-ecs-deploy',
+  bucket: `${projectName}-ecs-deploy`,
   lifecycleRules: [
     {
       enabled: true,
@@ -34,7 +34,7 @@ export const codePipelineSourceBucket = new aws.s3.Bucket('ecs-deploy', {
 
 export const lambdaSourceBucket = new aws.s3.Bucket('lambda-source', {
   acl: 'private',
-  bucket: 'jokes-lambda-source',
+  bucket: `${projectName}-lambda-source`,
   lifecycleRules: [
     {
       enabled: true,
@@ -62,7 +62,7 @@ export const lambdaSourceBucket = new aws.s3.Bucket('lambda-source', {
 
 export const logsBucket = new aws.s3.Bucket('logs', {
   acl: 'private',
-  bucket: 'jokes-logs',
+  bucket: `${projectName}-logs`,
   lifecycleRules: [
     {
       enabled: true,
@@ -90,7 +90,7 @@ export const logsBucket = new aws.s3.Bucket('logs', {
 
 export const uiSourceBucket = new aws.s3.Bucket('ui-source', {
   acl: 'public-read',
-  bucket: 'jokes-ui-source',
+  bucket: `${projectName}-ui-source`,
   lifecycleRules: [
     {
       enabled: true,

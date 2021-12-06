@@ -6,8 +6,8 @@ import { defaultUIOrigin, projectName } from '@vars'
 // https://www.pulumi.com/docs/reference/pkg/aws/cognito/userpoolclient/
 
 const tokenValidity = {
-  accessTokenValidity: 0.5, // Hours
-  idTokenValidity: 0.5, // Hours
+  accessTokenValidity: 30, // Minutes
+  idTokenValidity: 30, // Minutes
   refreshTokenValidity: 30, // Days
 }
 

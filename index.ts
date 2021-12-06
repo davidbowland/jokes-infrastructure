@@ -6,6 +6,7 @@ import './config'
 // Import modules to create resources
 import '@cognito'
 import '@ec2'
+import '@route53'
 import '@s3'
 import '@ses'
 

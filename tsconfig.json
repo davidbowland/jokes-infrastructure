@@ -49,6 +49,7 @@
       "@cognito": ["cognito"],
       "@ec2": ["ec2"],
       "@providers": ["providers"],
+      "@route53": ["route53"],
       "@s3": ["s3"],
       "@ses": ["ses"],
       "@vars": ["vars"]

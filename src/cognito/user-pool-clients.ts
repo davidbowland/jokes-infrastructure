@@ -1,7 +1,7 @@
 import * as aws from '@pulumi/aws'
 
 import { userPool } from './user-pools'
-import { cloudFrontOrigin, defaultUIOrigin, projectName } from '@vars'
+import { defaultUIOrigin, projectName } from '@vars'
 
 // https://www.pulumi.com/docs/reference/pkg/aws/cognito/userpoolclient/
 
@@ -16,8 +16,8 @@ export const clientUserPoolClient = new aws.cognito.UserPoolClient('client', {
   allowedOauthFlowsUserPoolClient: true,
   allowedOauthScopes: ['email', 'openid', 'aws.cognito.signin.user.admin'],
   explicitAuthFlows: ['ALLOW_CUSTOM_AUTH', 'ALLOW_REFRESH_TOKEN_AUTH', 'ALLOW_USER_SRP_AUTH'],
-  callbackUrls: [`${defaultUIOrigin},${cloudFrontOrigin}`],
-  logoutUrls: [`${defaultUIOrigin},${cloudFrontOrigin}`],
+  callbackUrls: [`${defaultUIOrigin}`],
+  logoutUrls: [`${defaultUIOrigin}`],
   name: `${projectName}-client`,
   preventUserExistenceErrors: 'ENABLED',
   supportedIdentityProviders: ['COGNITO'],

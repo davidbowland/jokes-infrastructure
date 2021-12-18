@@ -4,7 +4,7 @@ import { createdBy, createdFor, projectName } from '@vars'
 
 // https://www.pulumi.com/docs/reference/pkg/aws/s3/bucket/
 
-export const codePipelineSourceBucket = new aws.s3.Bucket('ecs-deploy', {
+export const ecsSourceBucket = new aws.s3.Bucket('ecs-deploy', {
   acl: 'private',
   bucket: `${projectName}-ecs-deploy`,
   lifecycleRules: [

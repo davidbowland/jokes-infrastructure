@@ -1,7 +1,0 @@
-#!/bin/sh
-
-# Stop immediately on error
-set -e
-
-# Enforce linter settings on push
-npx eslint --fix .

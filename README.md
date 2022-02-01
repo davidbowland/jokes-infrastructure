@@ -1,22 +1,17 @@
-# dbowland.com Jokes Infrastructure
+# Jokes Infrastructure
 
 Infrastructure as Code for jokes project.
 
 ## Setup
 
-The `developer` role is required to deploy this project.
+The `developer` role and [AWS CLI](https://aws.amazon.com/cli/) are required to deploy this project.
 
-### Node / NPM
+### CloudFormation
 
-1. [Node 16](https://nodejs.org/en/)
-1. [NPM 7+](https://www.npmjs.com/)
-
-### Pulumi
-
-This project is built using [Pulumi](https://www.pulumi.com/). Install the CLI using brew:
+Execute the `deploy.sh` script to deploy the infrastructure to development. Infrastructure is deployed to production via Git hooks.
 
 ```bash
-brew install pulumi
+./deploy.sh
 ```
 
 ### AWS Credentials
@@ -54,52 +49,10 @@ If necessary, retreive the ARN of the primary MFA device attached to the default
 aws iam list-mfa-devices --query 'MFADevices[].SerialNumber' --output text
 ```
 
-## Developing Locally
-
-When writing code from scratch, it can be useful to consult the [Pulumi AWS package reference](https://www.pulumi.com/docs/reference/pkg/aws/).
-
-### Preview Changes
-
-Preview the changes the local code will make with:
-
-```bash
-npm run preview
-```
-
-If the `developer` profile is not available, this command will fail.
-
-### Deploying to Production
-
-A preview will execute when a pull request is created to `master`. When the pull request is merged into `master`, the infrastructure will be automatically deployed to production.
-
-In extreme cases, code can be deployed locally with:
-
-```bash
-npm run deploy
-```
-
-### Refreshing State with Infrastructure
-
-If the state files becomes desynchronized from the infrastructure, it can be refreshed with:
-
-```bash
-npm run refresh
-```
-
 ## Additional Documentation
-
-- [AWS API Gateway](https://aws.amazon.com/api-gateway/)
 
 - [AWS CLI](https://aws.amazon.com/cli/)
 
+- [AWS CloudFormation](https://aws.amazon.com/cloudformation/)
+
 - [AWS credentials](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html)
-
-- [AWS DynamoDB](https://aws.amazon.com/dynamodb/)
-
-- [AWS Lambda](https://aws.amazon.com/lambda/)
-
-- [Pulumi AWS package reference](https://www.pulumi.com/docs/reference/pkg/aws/)
-
-- [Pulumi CLI](https://www.pulumi.com/docs/reference/cli/)
-
-- [Pulumi refresh](https://www.pulumi.com/docs/reference/cli/pulumi_refresh/)

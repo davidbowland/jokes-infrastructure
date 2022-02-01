@@ -1,0 +1,110 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  Infrastructure for dbowland.com jokes project
+
+Parameters:
+  AccountId:
+    Type: String
+    Description: AWS account ID
+  Environment:
+    Type: String
+    Default: prod
+    AllowedValues:
+      - prod
+      - test
+    Description: Environment for deploy
+
+Mappings:
+  EnvironmentMap:
+    prod:
+      certificate: adce1a21-90b4-4120-8548-111215e582f0
+      domain: dbowland.com
+      project: jokes
+    test:
+      certificate: 6a48cba7-feb9-4de5-8cbf-d383140fcdef
+      domain: bowland.link
+      project: jokes-test
+
+Resources:
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_email
+            Priority: 1
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+      AutoVerifiedAttributes:
+        - email
+      DeviceConfiguration:
+        DeviceOnlyRememberedOnUserPrompt: true
+      EmailConfiguration:
+        ReplyToEmailAddress: !Sub
+          - 'do-not-reply@${Domain}'
+          - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+      EnabledMfas:
+        - SOFTWARE_TOKEN_MFA
+      MfaConfiguration: OPTIONAL
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 12
+          RequireLowercase: false
+          RequireNumbers: false
+          RequireSymbols: false
+          RequireUppercase: false
+          TemporaryPasswordValidityDays: 14
+      SmsAuthenticationMessage: Your authentication code is {####}.
+      UsernameAttributes:
+        - email
+      UsernameConfiguration:
+        CaseSensitive: false
+      UserPoolName: !FindInMap [EnvironmentMap, !Ref Environment, project]
+      UserPoolTags:
+        CreatedBy: !FindInMap [EnvironmentMap, !Ref Environment, project]
+        CreatedFor: jokes-infrastructure
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      AccessTokenValidity: 1 # Hours
+      AllowedOAuthFlows:
+        - implicit
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthScopes:
+        - email
+        - openid
+        - aws.cognito.signin.user.admin
+      CallbackURLs:
+        - !Sub
+            - 'https://jokes.${Domain}'
+            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+      IdTokenValidity: 1 # Hours
+      LogoutURLs:
+        - !Sub
+            - 'https://jokes.${Domain}'
+            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+      PreventUserExistenceErrors: ENABLED
+      RefreshTokenValidity: 30 # Days
+      SupportedIdentityProviders:
+        - COGNITO
+      UserPoolId: !Ref UserPool
+
+  UserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      CustomDomainConfig:
+        CertificateArn: !Sub
+          - 'arn:aws:acm:us-east-1:${AccountId}:certificate/${Certificate}'
+          - Certificate: !FindInMap [EnvironmentMap, !Ref Environment, certificate]
+      Domain: !Sub
+        - 'jokes-auth.${DomainName}'
+        - DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+      UserPoolId: !Ref UserPool
+
+Outputs:
+  UserPoolDomainName:
+    Description: Domain name for user pool
+    Value: !Sub
+      - 'jokes-auth.${DomainName}'
+      - DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domain]

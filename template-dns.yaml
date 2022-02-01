@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  DNS for infrastructure for dbowland.com jokes project
+
+Parameters:
+  AccountId:
+    Type: String
+    Description: AWS account ID
+  CloudFrontDomainName:
+    Type: String
+    Description: Domain name for CloudFront distribution
+  CognitoDomain:
+    Type: String
+    Description: Domain for Cognito authoriation
+  Environment:
+    Type: String
+    Default: prod
+    AllowedValues:
+      - prod
+      - test
+    Description: Environment for deploy
+
+Mappings:
+  EnvironmentMap:
+    prod:
+      zoneId: Z072422417XWM8PIXXSFA
+    test:
+      zoneId: Z01312547RGU1BYKIJXY
+
+Resources:
+  DomainDns:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      AliasTarget:
+        DNSName: !Ref CloudFrontDomainName
+        EvaluateTargetHealth: false
+        HostedZoneId: Z2FDTNDATAQYW2 # CloudFront resources HostedZoneId
+      HostedZoneId: !FindInMap [EnvironmentMap, !Ref Environment, zoneId]
+      Name: !Ref CognitoDomain
+      Type: A

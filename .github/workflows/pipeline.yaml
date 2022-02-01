@@ -1,0 +1,125 @@
+name: Pipeline
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'feature**'
+
+env:
+  DNS_TEMPLATE_NAME: template-dns.yaml
+  TEMPLATE_NAME: template.yaml
+  TESTING_DNS_STACK_NAME: jokes-infrastructure-dns-test
+  TESTING_STACK_NAME: jokes-infrastructure-test
+  PROD_DNS_STACK_NAME: jokes-infrastructure-dns
+  PROD_STACK_NAME: jokes-infrastructure
+
+jobs:
+  build-and-deploy-feature:
+    name: Deploy feature branch
+    if: startsWith(github.ref, 'refs/heads/feature')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Deploy test infrastructure
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: ${{ env.TESTING_STACK_NAME }}
+          template: ${{ env.TEMPLATE_NAME }}
+          no-fail-on-empty-changeset: 1
+          parameter-overrides: 'AccountId=${{ secrets.AWS_ACCOUNT_ID }},Environment=test'
+      - name: Query deployed infrastructure
+        run: |
+          COGNITO_DOMAIN_NAME=$(aws cloudformation describe-stacks --stack-name ${{ env.TESTING_STACK_NAME }} --output text --query 'Stacks[0].Outputs[?OutputKey==`UserPoolDomainName`].OutputValue')
+          echo "::set-output name=COGNITO_DOMAIN_NAME::$COGNITO_DOMAIN_NAME"
+          CLOUDFRONT_DOMAIN_NAME=$(aws cognito-idp describe-user-pool-domain --domain "$COGNITO_DOMAIN_NAME" | grep CloudFrontDistribution | cut -d \" -f4)
+          echo "::set-output name=CLOUDFRONT_DOMAIN_NAME::$CLOUDFRONT_DOMAIN_NAME"
+        id: deployed-infrastructure
+      - name: Deploy test DNS infrastructure
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: ${{ env.TESTING_DNS_STACK_NAME }}
+          template: ${{ env.DNS_TEMPLATE_NAME }}
+          no-fail-on-empty-changeset: 1
+          parameter-overrides: 'AccountId=${{ secrets.AWS_ACCOUNT_ID }},CloudFrontDomainName=${{ steps.deployed-infrastructure.outputs.CLOUDFRONT_DOMAIN_NAME }},CognitoDomain=${{ steps.deployed-infrastructure.outputs.COGNITO_DOMAIN_NAME }},Environment=test'
+
+  deploy-testing:
+    name: Deploy to test environment
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Deploy test infrastructure
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: ${{ env.TESTING_STACK_NAME }}
+          template: ${{ env.TEMPLATE_NAME }}
+          no-fail-on-empty-changeset: 1
+          parameter-overrides: 'AccountId=${{ secrets.AWS_ACCOUNT_ID }},Environment=test'
+      - name: Query deployed infrastructure
+        run: |
+          COGNITO_DOMAIN_NAME=$(aws cloudformation describe-stacks --stack-name ${{ env.TESTING_STACK_NAME }} --output text --query 'Stacks[0].Outputs[?OutputKey==`UserPoolDomainName`].OutputValue')
+          echo "::set-output name=COGNITO_DOMAIN_NAME::$COGNITO_DOMAIN_NAME"
+          CLOUDFRONT_DOMAIN_NAME=$(aws cognito-idp describe-user-pool-domain --domain "$COGNITO_DOMAIN_NAME" | grep CloudFrontDistribution | cut -d \" -f4)
+          echo "::set-output name=CLOUDFRONT_DOMAIN_NAME::$CLOUDFRONT_DOMAIN_NAME"
+        id: deployed-infrastructure
+      - name: Deploy test DNS infrastructure
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: ${{ env.TESTING_DNS_STACK_NAME }}
+          template: ${{ env.DNS_TEMPLATE_NAME }}
+          no-fail-on-empty-changeset: 1
+          parameter-overrides: 'AccountId=${{ secrets.AWS_ACCOUNT_ID }},CloudFrontDomainName=${{ steps.deployed-infrastructure.outputs.CLOUDFRONT_DOMAIN_NAME }},CognitoDomain=${{ steps.deployed-infrastructure.outputs.COGNITO_DOMAIN_NAME }},Environment=test'
+
+  deploy-production:
+    name: Deploy to production
+    if: github.ref == 'refs/heads/master'
+    needs: [deploy-testing]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Deploy production infrastructure
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: ${{ env.PROD_STACK_NAME }}
+          template: ${{ env.TEMPLATE_NAME }}
+          no-fail-on-empty-changeset: 1
+          parameter-overrides: 'AccountId=${{ secrets.AWS_ACCOUNT_ID }}'
+      - name: Query deployed infrastructure
+        run: |
+          COGNITO_DOMAIN_NAME=$(aws cloudformation describe-stacks --stack-name ${{ env.PROD_STACK_NAME }} --output text --query 'Stacks[0].Outputs[?OutputKey==`UserPoolDomainName`].OutputValue')
+          echo "::set-output name=COGNITO_DOMAIN_NAME::$COGNITO_DOMAIN_NAME"
+          CLOUDFRONT_DOMAIN_NAME=$(aws cognito-idp describe-user-pool-domain --domain "$COGNITO_DOMAIN_NAME" | grep CloudFrontDistribution | cut -d \" -f4)
+          echo "::set-output name=CLOUDFRONT_DOMAIN_NAME::$CLOUDFRONT_DOMAIN_NAME"
+        id: deployed-infrastructure
+      - name: Deploy production DNS infrastructure
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: ${{ env.PROD_DNS_STACK_NAME }}
+          template: ${{ env.DNS_TEMPLATE_NAME }}
+          no-fail-on-empty-changeset: 1
+          parameter-overrides: 'AccountId=${{ secrets.AWS_ACCOUNT_ID }},CloudFrontDomainName=${{ steps.deployed-infrastructure.outputs.CLOUDFRONT_DOMAIN_NAME }},CognitoDomain=${{ steps.deployed-infrastructure.outputs.COGNITO_DOMAIN_NAME }}'

@@ -77,13 +77,13 @@ Resources:
         - aws.cognito.signin.user.admin
       CallbackURLs:
         - !Sub
-            - 'https://jokes.${Domain}'
-            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          - 'https://jokes.${Domain}'
+          - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
       IdTokenValidity: 1 # Hours
       LogoutURLs:
         - !Sub
-            - 'https://jokes.${Domain}'
-            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          - 'https://jokes.${Domain}'
+          - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
       PreventUserExistenceErrors: ENABLED
       RefreshTokenValidity: 30 # Days
       SupportedIdentityProviders:

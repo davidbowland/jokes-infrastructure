@@ -123,3 +123,29 @@ jobs:
           template: ${{ env.DNS_TEMPLATE_NAME }}
           no-fail-on-empty-changeset: 1
           parameter-overrides: 'AccountId=${{ secrets.AWS_ACCOUNT_ID }},CloudFrontDomainName=${{ steps.deployed-infrastructure.outputs.CLOUDFRONT_DOMAIN_NAME }},CognitoDomain=${{ steps.deployed-infrastructure.outputs.COGNITO_DOMAIN_NAME }}'
+
+  bump:
+    name: Bump the version number and tag the commit
+    needs: [deploy-production]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v2
+      - name: Install Node 16
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+      - name: Install NPM 8
+        run: npm install -g npm@8
+
+      - name: Set git name and email
+        run: |
+          git config --local user.email "dbowland1+bot@gmail.com"
+          git config --local user.name "github-actions[bot]"
+      - name: Bump the minor version
+        run: npm version minor
+      - name: Push tag created by version bump
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}

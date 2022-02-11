@@ -8,7 +8,7 @@ The `developer` role and [AWS SAM CLI](https://aws.amazon.com/serverless/sam/) a
 
 ### CloudFormation
 
-Execute the `deploy.sh` script to deploy the infrastructure to development. Infrastructure is deployed to production via Git hooks.
+Execute the `deploy.sh` script to deploy the infrastructure to development. This project automatically deploys to production when a merge to `master` is made via a pull request.
 
 ```bash
 ./deploy.sh

@@ -22,6 +22,10 @@ jobs:
     steps:
       - name: Checkout latest code
         uses: actions/checkout@v2
+      - name: Install Python 2
+        uses: actions/setup-python@v2
+      - name: Install AWS SAM
+        uses: aws-actions/setup-sam@v1
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -30,12 +34,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Deploy test infrastructure
-        uses: aws-actions/aws-cloudformation-github-deploy@v1
-        with:
-          name: ${{ env.TESTING_STACK_NAME }}
-          template: ${{ env.TEMPLATE_NAME }}
-          no-fail-on-empty-changeset: 1
-          parameter-overrides: 'AccountId=${{ secrets.AWS_ACCOUNT_ID }},Environment=test'
+        shell: bash
+        run: |
+          sam deploy --stack-name ${{ env.TESTING_STACK_NAME }} \
+            --template-file ${{ env.TEMPLATE_NAME }} \
+            --region ${{ secrets.AWS_REGION }} \
+            --no-fail-on-empty-changeset \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --parameter-overrides 'AccountId=${{ secrets.AWS_ACCOUNT_ID }} Environment=test'
       - name: Query deployed infrastructure
         run: |
           COGNITO_DOMAIN_NAME=$(aws cloudformation describe-stacks --stack-name ${{ env.TESTING_STACK_NAME }} --output text --query 'Stacks[0].Outputs[?OutputKey==`UserPoolDomainName`].OutputValue')
@@ -44,12 +50,14 @@ jobs:
           echo "::set-output name=CLOUDFRONT_DOMAIN_NAME::$CLOUDFRONT_DOMAIN_NAME"
         id: deployed-infrastructure
       - name: Deploy test DNS infrastructure
-        uses: aws-actions/aws-cloudformation-github-deploy@v1
-        with:
-          name: ${{ env.TESTING_DNS_STACK_NAME }}
-          template: ${{ env.DNS_TEMPLATE_NAME }}
-          no-fail-on-empty-changeset: 1
-          parameter-overrides: 'AccountId=${{ secrets.AWS_ACCOUNT_ID }},CloudFrontDomainName=${{ steps.deployed-infrastructure.outputs.CLOUDFRONT_DOMAIN_NAME }},CognitoDomain=${{ steps.deployed-infrastructure.outputs.COGNITO_DOMAIN_NAME }},Environment=test'
+        shell: bash
+        run: |
+          sam deploy --stack-name ${{ env.TESTING_DNS_STACK_NAME }} \
+            --template-file ${{ env.DNS_TEMPLATE_NAME }} \
+            --region ${{ secrets.AWS_REGION }} \
+            --no-fail-on-empty-changeset \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --parameter-overrides 'AccountId=${{ secrets.AWS_ACCOUNT_ID }} CloudFrontDomainName=${{ steps.deployed-infrastructure.outputs.CLOUDFRONT_DOMAIN_NAME }} CognitoDomain=${{ steps.deployed-infrastructure.outputs.COGNITO_DOMAIN_NAME }} Environment=test'
 
   deploy-testing:
     name: Deploy to test environment
@@ -58,6 +66,10 @@ jobs:
     steps:
       - name: Checkout latest code
         uses: actions/checkout@v2
+      - name: Install Python 2
+        uses: actions/setup-python@v2
+      - name: Install AWS SAM
+        uses: aws-actions/setup-sam@v1
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -66,12 +78,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Deploy test infrastructure
-        uses: aws-actions/aws-cloudformation-github-deploy@v1
-        with:
-          name: ${{ env.TESTING_STACK_NAME }}
-          template: ${{ env.TEMPLATE_NAME }}
-          no-fail-on-empty-changeset: 1
-          parameter-overrides: 'AccountId=${{ secrets.AWS_ACCOUNT_ID }},Environment=test'
+        shell: bash
+        run: |
+          sam deploy --stack-name ${{ env.TESTING_STACK_NAME }} \
+            --template-file ${{ env.TEMPLATE_NAME }} \
+            --region ${{ secrets.AWS_REGION }} \
+            --no-fail-on-empty-changeset \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --parameter-overrides 'AccountId=${{ secrets.AWS_ACCOUNT_ID }} Environment=test'
       - name: Query deployed infrastructure
         run: |
           COGNITO_DOMAIN_NAME=$(aws cloudformation describe-stacks --stack-name ${{ env.TESTING_STACK_NAME }} --output text --query 'Stacks[0].Outputs[?OutputKey==`UserPoolDomainName`].OutputValue')
@@ -80,12 +94,14 @@ jobs:
           echo "::set-output name=CLOUDFRONT_DOMAIN_NAME::$CLOUDFRONT_DOMAIN_NAME"
         id: deployed-infrastructure
       - name: Deploy test DNS infrastructure
-        uses: aws-actions/aws-cloudformation-github-deploy@v1
-        with:
-          name: ${{ env.TESTING_DNS_STACK_NAME }}
-          template: ${{ env.DNS_TEMPLATE_NAME }}
-          no-fail-on-empty-changeset: 1
-          parameter-overrides: 'AccountId=${{ secrets.AWS_ACCOUNT_ID }},CloudFrontDomainName=${{ steps.deployed-infrastructure.outputs.CLOUDFRONT_DOMAIN_NAME }},CognitoDomain=${{ steps.deployed-infrastructure.outputs.COGNITO_DOMAIN_NAME }},Environment=test'
+        shell: bash
+        run: |
+          sam deploy --stack-name ${{ env.TESTING_DNS_STACK_NAME }} \
+            --template-file ${{ env.DNS_TEMPLATE_NAME }} \
+            --region ${{ secrets.AWS_REGION }} \
+            --no-fail-on-empty-changeset \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --parameter-overrides 'AccountId=${{ secrets.AWS_ACCOUNT_ID }} CloudFrontDomainName=${{ steps.deployed-infrastructure.outputs.CLOUDFRONT_DOMAIN_NAME }} CognitoDomain=${{ steps.deployed-infrastructure.outputs.COGNITO_DOMAIN_NAME }} Environment=test'
 
   deploy-production:
     name: Deploy to production
@@ -95,6 +111,10 @@ jobs:
     steps:
       - name: Checkout latest code
         uses: actions/checkout@v2
+      - name: Install Python 2
+        uses: actions/setup-python@v2
+      - name: Install AWS SAM
+        uses: aws-actions/setup-sam@v1
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -103,12 +123,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Deploy production infrastructure
-        uses: aws-actions/aws-cloudformation-github-deploy@v1
-        with:
-          name: ${{ env.PROD_STACK_NAME }}
-          template: ${{ env.TEMPLATE_NAME }}
-          no-fail-on-empty-changeset: 1
-          parameter-overrides: 'AccountId=${{ secrets.AWS_ACCOUNT_ID }}'
+        shell: bash
+        run: |
+          sam deploy --stack-name ${{ env.PROD_STACK_NAME }} \
+            --template-file ${{ env.TEMPLATE_NAME }} \
+            --region ${{ secrets.AWS_REGION }} \
+            --no-fail-on-empty-changeset \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --parameter-overrides 'AccountId=${{ secrets.AWS_ACCOUNT_ID }}'
       - name: Query deployed infrastructure
         run: |
           COGNITO_DOMAIN_NAME=$(aws cloudformation describe-stacks --stack-name ${{ env.PROD_STACK_NAME }} --output text --query 'Stacks[0].Outputs[?OutputKey==`UserPoolDomainName`].OutputValue')
@@ -117,12 +139,14 @@ jobs:
           echo "::set-output name=CLOUDFRONT_DOMAIN_NAME::$CLOUDFRONT_DOMAIN_NAME"
         id: deployed-infrastructure
       - name: Deploy production DNS infrastructure
-        uses: aws-actions/aws-cloudformation-github-deploy@v1
-        with:
-          name: ${{ env.PROD_DNS_STACK_NAME }}
-          template: ${{ env.DNS_TEMPLATE_NAME }}
-          no-fail-on-empty-changeset: 1
-          parameter-overrides: 'AccountId=${{ secrets.AWS_ACCOUNT_ID }},CloudFrontDomainName=${{ steps.deployed-infrastructure.outputs.CLOUDFRONT_DOMAIN_NAME }},CognitoDomain=${{ steps.deployed-infrastructure.outputs.COGNITO_DOMAIN_NAME }}'
+        shell: bash
+        run: |
+          sam deploy --stack-name ${{ env.PROD_DNS_STACK_NAME }} \
+            --template-file ${{ env.DNS_TEMPLATE_NAME }} \
+            --region ${{ secrets.AWS_REGION }} \
+            --no-fail-on-empty-changeset \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --parameter-overrides 'AccountId=${{ secrets.AWS_ACCOUNT_ID }} CloudFrontDomainName=${{ steps.deployed-infrastructure.outputs.CLOUDFRONT_DOMAIN_NAME }} CognitoDomain=${{ steps.deployed-infrastructure.outputs.COGNITO_DOMAIN_NAME }}'
 
   bump:
     name: Bump the version number and tag the commit

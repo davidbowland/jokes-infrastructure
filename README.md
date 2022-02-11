@@ -4,7 +4,7 @@ Infrastructure as Code for jokes project.
 
 ## Setup
 
-The `developer` role and [AWS CLI](https://aws.amazon.com/cli/) are required to deploy this project.
+The `developer` role and [AWS SAM CLI](https://aws.amazon.com/serverless/sam/) are required to deploy this project.
 
 ### CloudFormation
 
@@ -52,6 +52,8 @@ aws iam list-mfa-devices --query 'MFADevices[].SerialNumber' --output text
 ## Additional Documentation
 
 - [AWS CLI](https://aws.amazon.com/cli/)
+
+- [AWS SAM CLI](https://aws.amazon.com/serverless/sam/)
 
 - [AWS CloudFormation](https://aws.amazon.com/cloudformation/)
 

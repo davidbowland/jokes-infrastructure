@@ -3,9 +3,6 @@ Description: >-
   DNS for infrastructure for dbowland.com jokes project
 
 Parameters:
-  AccountId:
-    Type: String
-    Description: AWS account ID
   CloudFrontDomainName:
     Type: String
     Description: Domain name for CloudFront distribution

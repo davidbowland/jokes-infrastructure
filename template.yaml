@@ -3,9 +3,6 @@ Description: >-
   Infrastructure for dbowland.com jokes project
 
 Parameters:
-  AccountId:
-    Type: String
-    Description: AWS account ID
   Environment:
     Type: String
     Default: prod
@@ -13,19 +10,26 @@ Parameters:
       - prod
       - test
     Description: Environment for deploy
+  PinpointId:
+    Type: String
+    Description: Application ID for analytics
 
 Mappings:
   EnvironmentMap:
     prod:
       certificate: adce1a21-90b4-4120-8548-111215e582f0
       domain: dbowland.com
+      pinpointId: 46911f9ec7a64640ba154a9d5c65d589
       project: jokes
     test:
       certificate: 6a48cba7-feb9-4de5-8cbf-d383140fcdef
       domain: bowland.link
+      pinpointId: 46911f9ec7a64640ba154a9d5c65d589
       project: jokes-test
 
 Resources:
+  # Authentication
+
   UserPool:
     Type: AWS::Cognito::UserPool
     Properties:
@@ -61,8 +65,8 @@ Resources:
         CaseSensitive: false
       UserPoolName: !FindInMap [EnvironmentMap, !Ref Environment, project]
       UserPoolTags:
-        CreatedBy: !FindInMap [EnvironmentMap, !Ref Environment, project]
-        CreatedFor: jokes-infrastructure
+        'created-by': 'jokes-infrastructure'
+        'created-for': 'jokes'
 
   UserPoolClient:
     Type: AWS::Cognito::UserPoolClient
@@ -95,12 +99,104 @@ Resources:
     Properties:
       CustomDomainConfig:
         CertificateArn: !Sub
-          - 'arn:aws:acm:us-east-1:${AccountId}:certificate/${Certificate}'
+          - 'arn:aws:acm:us-east-1:${AWS::AccountId}:certificate/${Certificate}'
           - Certificate: !FindInMap [EnvironmentMap, !Ref Environment, certificate]
       Domain: !Sub
         - 'jokes-auth.${DomainName}'
         - DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domain]
       UserPoolId: !Ref UserPool
+
+  # Authorization
+
+  IdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      AllowClassicFlow: false
+      AllowUnauthenticatedIdentities: true
+      CognitoIdentityProviders:
+        - ClientId: !Ref UserPoolClient
+          ProviderName: !Sub '${UserPool.ProviderName}'
+      IdentityPoolName: !FindInMap [EnvironmentMap, !Ref Environment, project]
+
+  IdentityPoolRoleAttachment:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties:
+      IdentityPoolId: !Ref IdentityPool
+      Roles:
+        'authenticated': !Sub '${AuthenticatedRole.Arn}'
+        'unauthenticated': !Sub '${UnauthenticatedRole.Arn}'
+
+  AuthenticatedRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated:
+                - cognito-identity.amazonaws.com
+            Action:
+              - 'sts:AssumeRoleWithWebIdentity'
+            Condition:
+              StringEquals:
+                cognito-identity.amazonaws.com:aud:
+                  - !Ref IdentityPool
+              ForAnyValue:StringLike:
+                cognito-identity.amazonaws.com:amr:
+                  - authenticated
+      Policies:
+        - PolicyName: !Sub
+            - '${Project}-authenticated'
+            - Project: !FindInMap [EnvironmentMap, !Ref Environment, project]
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'mobiletargeting:GetEndpoint'
+                  - 'mobiletargeting:PutEvents'
+                  - 'mobiletargeting:UpdateEndpoint'
+                Resource: !Sub 'arn:aws:mobiletargeting:us-east-1:${AWS::AccountId}:apps/${PinpointId}/*'
+              - Effect: Allow
+                Action: 'mobileanalytics:PutEvents'
+                Resource: '*'
+
+  UnauthenticatedRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated:
+                - cognito-identity.amazonaws.com
+            Action:
+              - 'sts:AssumeRoleWithWebIdentity'
+            Condition:
+              StringEquals:
+                cognito-identity.amazonaws.com:aud:
+                  - !Ref IdentityPool
+              ForAnyValue:StringLike:
+                cognito-identity.amazonaws.com:amr:
+                  - unauthenticated
+      Policies:
+        - PolicyName: !Sub
+            - '${Project}-unauthenticated'
+            - Project: !FindInMap [EnvironmentMap, !Ref Environment, project]
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'mobiletargeting:GetEndpoint'
+                  - 'mobiletargeting:PutEvents'
+                  - 'mobiletargeting:UpdateEndpoint'
+                Resource: !Sub 'arn:aws:mobiletargeting:us-east-1:${AWS::AccountId}:apps/${PinpointId}/*'
+              - Effect: Allow
+                Action: 'mobileanalytics:PutEvents'
+                Resource: '*'
 
 Outputs:
   UserPoolDomainName:

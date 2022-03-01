@@ -20,7 +20,6 @@ Mappings:
       certificate: adce1a21-90b4-4120-8548-111215e582f0
       domain: dbowland.com
       lambdaBucketName: jokes-lambda
-      pinpointId: 46911f9ec7a64640ba154a9d5c65d589
       project: jokes
       roleNameCloudFormation: jokes-cloudformation
       roleNamePipeline: jokes-pipeline
@@ -28,7 +27,6 @@ Mappings:
       certificate: 6a48cba7-feb9-4de5-8cbf-d383140fcdef
       domain: bowland.link
       lambdaBucketName: jokes-lambda-test
-      pinpointId: 46911f9ec7a64640ba154a9d5c65d589
       project: jokes-test
       roleNameCloudFormation: jokes-cloudformation-test
       roleNamePipeline: jokes-pipeline-test

@@ -12,9 +12,11 @@ env:
   TEMPLATE_NAME: template.yaml
   TESTING_DNS_STACK_NAME: jokes-infrastructure-dns-test
   TESTING_EAST_1_STACK_NAME: jokes-infrastructure-east-1-test
+  TESTING_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/developer
   TESTING_STACK_NAME: jokes-infrastructure-test
   PROD_DNS_STACK_NAME: jokes-infrastructure-dns
   PROD_EAST_1_STACK_NAME: jokes-infrastructure-east-1
+  PROD_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/developer
   PROD_STACK_NAME: jokes-infrastructure
 
 jobs:
@@ -36,6 +38,10 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ env.TESTING_PIPELINE_EXECUTION_ROLE }}
+          role-session-name: feature-deployment
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
       - name: Deploy test us-east-1 infrastructure
         shell: bash
         run: |
@@ -94,6 +100,10 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ env.TESTING_PIPELINE_EXECUTION_ROLE }}
+          role-session-name: testing-deployment
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
       - name: Deploy test us-east-1 infrastructure
         shell: bash
         run: |
@@ -153,6 +163,10 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ env.PROD_PIPELINE_EXECUTION_ROLE }}
+          role-session-name: prod-deployment
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
       - name: Deploy production us-east-1 infrastructure
         shell: bash
         run: |

@@ -28,6 +28,7 @@ Resources:
       Tags:
         'created-by': 'jokes-infrastructure'
         'created-for': 'jokes'
+        'environment': !Ref Environment
 
 Outputs:
   PinpointId:

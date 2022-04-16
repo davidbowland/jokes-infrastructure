@@ -71,6 +71,7 @@ Resources:
       UserPoolTags:
         'created-by': 'jokes-infrastructure'
         'created-for': 'jokes'
+        'environment': !Ref Environment
 
   UserPoolClient:
     Type: AWS::Cognito::UserPoolClient
@@ -166,6 +167,13 @@ Resources:
               - Effect: Allow
                 Action: 'mobileanalytics:PutEvents'
                 Resource: '*'
+      Tags:
+        - Key: 'created-by'
+          Value: 'jokes-infrastructure'
+        - Key: 'created-for'
+          Value: 'jokes'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   UnauthenticatedRole:
     Type: AWS::IAM::Role
@@ -203,6 +211,13 @@ Resources:
               - Effect: Allow
                 Action: 'mobileanalytics:PutEvents'
                 Resource: '*'
+      Tags:
+        - Key: 'created-by'
+          Value: 'jokes-infrastructure'
+        - Key: 'created-for'
+          Value: 'jokes'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   # Deployment storage
 
@@ -226,6 +241,8 @@ Resources:
           Value: 'jokes-infrastructure'
         - Key: 'created-for'
           Value: 'jokes'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   # Deployment roles
 
@@ -255,6 +272,13 @@ Resources:
                   - 'account:*'
                 Resource: '*'
       RoleName: !FindInMap [EnvironmentMap, !Ref Environment, roleNameCloudFormation]
+      Tags:
+        - Key: 'created-by'
+          Value: 'jokes-infrastructure'
+        - Key: 'created-for'
+          Value: 'jokes'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   PipelineRole:
     Type: AWS::IAM::Role
@@ -295,6 +319,13 @@ Resources:
                   - !Sub 'arn:aws:s3:::${LambdaBucket}/*'
                   - !Sub 'arn:aws:s3:::${LambdaBucket}'
       RoleName: !FindInMap [EnvironmentMap, !Ref Environment, roleNamePipeline]
+      Tags:
+        - Key: 'created-by'
+          Value: 'jokes-infrastructure'
+        - Key: 'created-for'
+          Value: 'jokes'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   # Deployment users
 
@@ -319,6 +350,8 @@ Resources:
           Value: 'jokes-infrastructure'
         - Key: 'created-for'
           Value: 'jokes'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   UiUser:
     Type: AWS::IAM::User
@@ -341,6 +374,8 @@ Resources:
           Value: 'jokes-infrastructure'
         - Key: 'created-for'
           Value: 'jokes'
+        - Key: 'environment'
+          Value: !Ref Environment
 
 Outputs:
   UserPoolDomainName:

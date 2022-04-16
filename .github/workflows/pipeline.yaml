@@ -12,11 +12,11 @@ env:
   TEMPLATE_NAME: template.yaml
   TESTING_DNS_STACK_NAME: jokes-infrastructure-dns-test
   TESTING_EAST_1_STACK_NAME: jokes-infrastructure-east-1-test
-  TESTING_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/developer
+  TESTING_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/full-access
   TESTING_STACK_NAME: jokes-infrastructure-test
   PROD_DNS_STACK_NAME: jokes-infrastructure-dns
   PROD_EAST_1_STACK_NAME: jokes-infrastructure-east-1
-  PROD_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/developer
+  PROD_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/full-access
   PROD_STACK_NAME: jokes-infrastructure
 
 jobs:

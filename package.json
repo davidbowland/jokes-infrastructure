@@ -5,23 +5,7 @@
   "description": "Infrastructure for jokes project",
   "author": "David Bowland",
   "engines": {
-    "node": "^16.0.0"
-  },
-  "scripts": {
-    "deploy": "./deploy.sh",
-    "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky install ; fi",
-    "lint": "prettier --write ."
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "husky": "^6.0.0",
-    "lint-staged": "^11.0.0",
-    "prettier": "^2.3.0"
-  },
-  "lint-staged": {
-    "**/*": [
-      "prettier --write --ignore-unknown"
-    ]
+    "node": "^18.0.0"
   },
   "repository": {
     "type": "git",
@@ -30,5 +14,21 @@
   "bugs": {
     "url": "https://github.com/davidbowland/jokes-infrastructure/issues"
   },
-  "homepage": "https://github.com/davidbowland/jokes-infrastructure#readme"
+  "homepage": "https://github.com/davidbowland/jokes-infrastructure#readme",
+  "scripts": {
+    "deploy": "./deploy.sh",
+    "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky install ; fi",
+    "lint": "prettier --write ."
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.2",
+    "prettier": "^2.7.1"
+  },
+  "lint-staged": {
+    "**/*": [
+      "prettier --write --ignore-unknown"
+    ]
+  }
 }

@@ -257,7 +257,6 @@ Resources:
               Service:
                 - cloudformation.amazonaws.com
             Action: 'sts:AssumeRole'
-      PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/root-boundary'
       Policies:
         - PolicyName: !Sub
             - '${Project}-cloudformation'
@@ -290,7 +289,6 @@ Resources:
             Principal:
               AWS: !Sub '${AWS::AccountId}'
             Action: 'sts:AssumeRole'
-      PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/root-boundary'
       Policies:
         - PolicyName: !Sub
             - '${Project}-pipeline'
@@ -332,7 +330,6 @@ Resources:
   ApiUser:
     Type: AWS::IAM::User
     Properties:
-      PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/root-boundary'
       Policies:
         - PolicyName: !Sub
             - '${Project}-pipeline'
@@ -356,7 +353,6 @@ Resources:
   UiUser:
     Type: AWS::IAM::User
     Properties:
-      PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/root-boundary'
       Policies:
         - PolicyName: !Sub
             - '${Project}-pipeline'

@@ -1,11 +1,10 @@
 {
   "name": "jokes-infrastructure",
   "version": "1.21.0",
-  "private": true,
   "description": "Infrastructure for jokes project",
   "author": "David Bowland",
   "engines": {
-    "node": "^18.0.0"
+    "node": "^20.0.0"
   },
   "repository": {
     "type": "git",
@@ -17,13 +16,12 @@
   "homepage": "https://github.com/davidbowland/jokes-infrastructure#readme",
   "scripts": {
     "deploy": "./deploy.sh",
-    "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky install ; fi",
+    "prepare": "husky",
     "lint": "prettier --write .",
     "update": "ncu --target minor --upgrade && npm audit fix --audit-level=none && npm dedupe"
   },
-  "dependencies": {},
   "devDependencies": {
-    "husky": "^8.0.3",
+    "husky": "^9.1.4",
     "lint-staged": "^15.2.0",
     "prettier": "^3.1.1"
   },

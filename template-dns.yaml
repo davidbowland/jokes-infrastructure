@@ -8,7 +8,7 @@ Parameters:
     Description: Domain name for CloudFront distribution
   CognitoDomain:
     Type: String
-    Description: Domain for Cognito authoriation
+    Description: Domain for Cognito authorization
   Environment:
     Type: String
     Default: prod

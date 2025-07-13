@@ -44,20 +44,6 @@ jobs:
           role-session-name: feature-deployment
           role-duration-seconds: 3600
           role-skip-session-tagging: true
-      - name: Deploy test us-east-1 infrastructure
-        shell: bash
-        run: |
-          sam deploy --stack-name ${{ env.TESTING_EAST_1_STACK_NAME }} \
-            --template-file ${{ env.EAST_1_TEMPLATE_NAME }} \
-            --region us-east-1 \
-            --no-fail-on-empty-changeset \
-            --capabilities CAPABILITY_NAMED_IAM \
-            --parameter-overrides 'Environment=test'
-      - name: Query deployed us-east-1 infrastructure
-        run: |
-          PINPOINT_ID=$(AWS_REGION=us-east-1 aws cloudformation describe-stacks --stack-name ${{ env.TESTING_EAST_1_STACK_NAME }} --output text --query 'Stacks[0].Outputs[?OutputKey==`PinpointId`].OutputValue')
-          echo "PINPOINT_ID=$PINPOINT_ID" >> $GITHUB_OUTPUT
-        id: east-1-infrastructure
       - name: Deploy test infrastructure
         shell: bash
         run: |
@@ -66,7 +52,7 @@ jobs:
             --region ${{ secrets.AWS_REGION }} \
             --no-fail-on-empty-changeset \
             --capabilities CAPABILITY_NAMED_IAM \
-            --parameter-overrides 'Environment=test PinpointId=${{ steps.east-1-infrastructure.outputs.PINPOINT_ID }}'
+            --parameter-overrides 'Environment=test'
       - name: Query deployed infrastructure
         run: |
           COGNITO_DOMAIN_NAME=$(aws cloudformation describe-stacks --stack-name ${{ env.TESTING_STACK_NAME }} --output text --query 'Stacks[0].Outputs[?OutputKey==`UserPoolDomainName`].OutputValue')
@@ -108,20 +94,6 @@ jobs:
           role-session-name: testing-deployment
           role-duration-seconds: 3600
           role-skip-session-tagging: true
-      - name: Deploy test us-east-1 infrastructure
-        shell: bash
-        run: |
-          sam deploy --stack-name ${{ env.TESTING_EAST_1_STACK_NAME }} \
-            --template-file ${{ env.EAST_1_TEMPLATE_NAME }} \
-            --region us-east-1 \
-            --no-fail-on-empty-changeset \
-            --capabilities CAPABILITY_NAMED_IAM \
-            --parameter-overrides 'Environment=test'
-      - name: Query deployed us-east-1 infrastructure
-        run: |
-          PINPOINT_ID=$(AWS_REGION=us-east-1 aws cloudformation describe-stacks --stack-name ${{ env.TESTING_EAST_1_STACK_NAME }} --output text --query 'Stacks[0].Outputs[?OutputKey==`PinpointId`].OutputValue')
-          echo "PINPOINT_ID=$PINPOINT_ID" >> $GITHUB_OUTPUT
-        id: east-1-infrastructure
       - name: Deploy test infrastructure
         shell: bash
         run: |
@@ -130,7 +102,7 @@ jobs:
             --region ${{ secrets.AWS_REGION }} \
             --no-fail-on-empty-changeset \
             --capabilities CAPABILITY_NAMED_IAM \
-            --parameter-overrides 'Environment=test PinpointId=${{ steps.east-1-infrastructure.outputs.PINPOINT_ID }}'
+            --parameter-overrides 'Environment=test'
       - name: Query deployed infrastructure
         run: |
           COGNITO_DOMAIN_NAME=$(aws cloudformation describe-stacks --stack-name ${{ env.TESTING_STACK_NAME }} --output text --query 'Stacks[0].Outputs[?OutputKey==`UserPoolDomainName`].OutputValue')
@@ -173,19 +145,6 @@ jobs:
           role-session-name: prod-deployment
           role-duration-seconds: 3600
           role-skip-session-tagging: true
-      - name: Deploy production us-east-1 infrastructure
-        shell: bash
-        run: |
-          sam deploy --stack-name ${{ env.PROD_EAST_1_STACK_NAME }} \
-            --template-file ${{ env.EAST_1_TEMPLATE_NAME }} \
-            --region us-east-1 \
-            --no-fail-on-empty-changeset \
-            --capabilities CAPABILITY_NAMED_IAM
-      - name: Query deployed us-east-1 infrastructure
-        run: |
-          PINPOINT_ID=$(AWS_REGION=us-east-1 aws cloudformation describe-stacks --stack-name ${{ env.PROD_EAST_1_STACK_NAME }} --output text --query 'Stacks[0].Outputs[?OutputKey==`PinpointId`].OutputValue')
-          echo "PINPOINT_ID=$PINPOINT_ID" >> $GITHUB_OUTPUT
-        id: east-1-infrastructure
       - name: Deploy production infrastructure
         shell: bash
         run: |
@@ -193,8 +152,7 @@ jobs:
             --template-file ${{ env.TEMPLATE_NAME }} \
             --region ${{ secrets.AWS_REGION }} \
             --no-fail-on-empty-changeset \
-            --capabilities CAPABILITY_NAMED_IAM \
-            --parameter-overrides 'PinpointId=${{ steps.east-1-infrastructure.outputs.PINPOINT_ID }}'
+            --capabilities CAPABILITY_NAMED_IAM
       - name: Query deployed infrastructure
         run: |
           COGNITO_DOMAIN_NAME=$(aws cloudformation describe-stacks --stack-name ${{ env.PROD_STACK_NAME }} --output text --query 'Stacks[0].Outputs[?OutputKey==`UserPoolDomainName`].OutputValue')

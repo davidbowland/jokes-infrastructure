@@ -9,18 +9,11 @@ fi
 
 # Deploy infrastructure
 
-sam deploy --stack-name jokes-infrastructure-east-1-test \
-  --template-file template-east-1.yaml --region us-east-1 \
-  --capabilities CAPABILITY_NAMED_IAM \
-  --no-fail-on-empty-changeset \
-  --parameter-overrides Environment=test
-
-PINPOINT_ID=$(AWS_REGION=us-east-1 aws cloudformation describe-stacks --stack-name jokes-infrastructure-east-1-test --output text --query 'Stacks[0].Outputs[?OutputKey==`PinpointId`].OutputValue')
 sam deploy --stack-name jokes-infrastructure-test \
   --template-file template.yaml --region us-east-2 \
   --capabilities CAPABILITY_NAMED_IAM \
   --no-fail-on-empty-changeset \
-  --parameter-overrides Environment=test PinpointId=$PINPOINT_ID
+  --parameter-overrides Environment=test
 
 COGNITO_DOMAIN_NAME=$(aws cloudformation describe-stacks --stack-name jokes-infrastructure-test --output text --query 'Stacks[0].Outputs[?OutputKey==`UserPoolDomainName`].OutputValue')
 CLOUDFRONT_DOMAIN_NAME=$(aws cognito-idp describe-user-pool-domain --domain "$COGNITO_DOMAIN_NAME" | grep CloudFrontDistribution | cut -d \" -f4)

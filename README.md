@@ -8,7 +8,7 @@ The `developer` role and [AWS SAM CLI](https://aws.amazon.com/serverless/sam/) a
 
 ### CloudFormation
 
-Push your code or execute the `deploy` script to deploy the infrastructure to development. This project automatically deploys to production when a merge to `master` is made via a pull request.
+Push your code or execute the `deploy` script to deploy the infrastructure to the test environment. This project automatically deploys to production when a merge to `master` is made via a pull request.
 
 ```bash
 npm run deploy

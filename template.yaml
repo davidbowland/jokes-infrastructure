@@ -14,14 +14,12 @@ Parameters:
 Mappings:
   EnvironmentMap:
     prod:
-      certificate: adce1a21-90b4-4120-8548-111215e582f0
       domain: dbowland.com
       lambdaBucketName: jokes-lambda
       project: jokes
       roleNameCloudFormation: jokes-cloudformation
       roleNamePipeline: jokes-pipeline
     test:
-      certificate: 6a48cba7-feb9-4de5-8cbf-d383140fcdef
       domain: bowland.link
       lambdaBucketName: jokes-lambda-test
       project: jokes-test
@@ -74,38 +72,16 @@ Resources:
     Type: AWS::Cognito::UserPoolClient
     Properties:
       AccessTokenValidity: 1 # Hours
-      AllowedOAuthFlows:
-        - implicit
-      AllowedOAuthFlowsUserPoolClient: true
-      AllowedOAuthScopes:
-        - email
-        - openid
-        - aws.cognito.signin.user.admin
-      CallbackURLs:
-        - !Sub
-          - 'https://jokes.${Domain}'
-          - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+      # No hosted-UI OAuth config: jokes-ui signs in through the Amplify
+      # Authenticator (SRP), which calls the Cognito API directly and never
+      # redirects, so the client needs no callback URLs and the pool needs no
+      # UserPoolDomain. The removed block enabled the deprecated implicit grant
+      # on jokes-auth.<domain> — live, but with no caller anywhere in the fleet.
       IdTokenValidity: 1 # Hours
-      LogoutURLs:
-        - !Sub
-          - 'https://jokes.${Domain}'
-          - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
       PreventUserExistenceErrors: ENABLED
       RefreshTokenValidity: 30 # Days
       SupportedIdentityProviders:
         - COGNITO
-      UserPoolId: !Ref UserPool
-
-  UserPoolDomain:
-    Type: AWS::Cognito::UserPoolDomain
-    Properties:
-      CustomDomainConfig:
-        CertificateArn: !Sub
-          - 'arn:aws:acm:us-east-1:${AWS::AccountId}:certificate/${Certificate}'
-          - Certificate: !FindInMap [EnvironmentMap, !Ref Environment, certificate]
-      Domain: !Sub
-        - 'jokes-auth.${DomainName}'
-        - DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domain]
       UserPoolId: !Ref UserPool
 
   # Authorization
@@ -337,10 +313,3 @@ Resources:
           Value: 'jokes'
         - Key: 'environment'
           Value: !Ref Environment
-
-Outputs:
-  UserPoolDomainName:
-    Description: Domain name for user pool
-    Value: !Sub
-      - 'jokes-auth.${DomainName}'
-      - DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domain]

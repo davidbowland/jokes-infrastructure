@@ -1,12 +1,9 @@
 name: Pipeline
 
 env:
-  DNS_TEMPLATE_NAME: template-dns.yaml
   TEMPLATE_NAME: template.yaml
-  TESTING_DNS_STACK_NAME: jokes-infrastructure-dns-test
   TESTING_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/full-access
   TESTING_STACK_NAME: jokes-infrastructure-test
-  PROD_DNS_STACK_NAME: jokes-infrastructure-dns
   PROD_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/full-access
   PROD_STACK_NAME: jokes-infrastructure
   HUSKY: 0
@@ -54,22 +51,6 @@ jobs:
             --no-fail-on-empty-changeset \
             --capabilities CAPABILITY_NAMED_IAM \
             --parameter-overrides 'Environment=test'
-      - name: Query deployed infrastructure
-        run: |
-          COGNITO_DOMAIN_NAME=$(aws cloudformation describe-stacks --stack-name ${{ env.TESTING_STACK_NAME }} --output text --query 'Stacks[0].Outputs[?OutputKey==`UserPoolDomainName`].OutputValue')
-          echo "COGNITO_DOMAIN_NAME=$COGNITO_DOMAIN_NAME" >> $GITHUB_OUTPUT
-          CLOUDFRONT_DOMAIN_NAME=$(aws cognito-idp describe-user-pool-domain --domain "$COGNITO_DOMAIN_NAME" | grep CloudFrontDistribution | cut -d \" -f4)
-          echo "CLOUDFRONT_DOMAIN_NAME=$CLOUDFRONT_DOMAIN_NAME" >> $GITHUB_OUTPUT
-        id: deployed-infrastructure
-      - name: Deploy test DNS infrastructure
-        shell: bash
-        run: |
-          sam deploy --stack-name ${{ env.TESTING_DNS_STACK_NAME }} \
-            --template-file ${{ env.DNS_TEMPLATE_NAME }} \
-            --region ${{ secrets.AWS_REGION }} \
-            --no-fail-on-empty-changeset \
-            --capabilities CAPABILITY_NAMED_IAM \
-            --parameter-overrides 'CloudFrontDomainName=${{ steps.deployed-infrastructure.outputs.CLOUDFRONT_DOMAIN_NAME }} CognitoDomain=${{ steps.deployed-infrastructure.outputs.COGNITO_DOMAIN_NAME }} Environment=test'
 
   deploy-testing:
     name: Deploy to test environment
@@ -104,22 +85,6 @@ jobs:
             --no-fail-on-empty-changeset \
             --capabilities CAPABILITY_NAMED_IAM \
             --parameter-overrides 'Environment=test'
-      - name: Query deployed infrastructure
-        run: |
-          COGNITO_DOMAIN_NAME=$(aws cloudformation describe-stacks --stack-name ${{ env.TESTING_STACK_NAME }} --output text --query 'Stacks[0].Outputs[?OutputKey==`UserPoolDomainName`].OutputValue')
-          echo "COGNITO_DOMAIN_NAME=$COGNITO_DOMAIN_NAME" >> $GITHUB_OUTPUT
-          CLOUDFRONT_DOMAIN_NAME=$(aws cognito-idp describe-user-pool-domain --domain "$COGNITO_DOMAIN_NAME" | grep CloudFrontDistribution | cut -d \" -f4)
-          echo "CLOUDFRONT_DOMAIN_NAME=$CLOUDFRONT_DOMAIN_NAME" >> $GITHUB_OUTPUT
-        id: deployed-infrastructure
-      - name: Deploy test DNS infrastructure
-        shell: bash
-        run: |
-          sam deploy --stack-name ${{ env.TESTING_DNS_STACK_NAME }} \
-            --template-file ${{ env.DNS_TEMPLATE_NAME }} \
-            --region ${{ secrets.AWS_REGION }} \
-            --no-fail-on-empty-changeset \
-            --capabilities CAPABILITY_NAMED_IAM \
-            --parameter-overrides 'CloudFrontDomainName=${{ steps.deployed-infrastructure.outputs.CLOUDFRONT_DOMAIN_NAME }} CognitoDomain=${{ steps.deployed-infrastructure.outputs.COGNITO_DOMAIN_NAME }} Environment=test'
 
   deploy-production:
     name: Deploy to production
@@ -154,22 +119,6 @@ jobs:
             --region ${{ secrets.AWS_REGION }} \
             --no-fail-on-empty-changeset \
             --capabilities CAPABILITY_NAMED_IAM
-      - name: Query deployed infrastructure
-        run: |
-          COGNITO_DOMAIN_NAME=$(aws cloudformation describe-stacks --stack-name ${{ env.PROD_STACK_NAME }} --output text --query 'Stacks[0].Outputs[?OutputKey==`UserPoolDomainName`].OutputValue')
-          echo "COGNITO_DOMAIN_NAME=$COGNITO_DOMAIN_NAME" >> $GITHUB_OUTPUT
-          CLOUDFRONT_DOMAIN_NAME=$(aws cognito-idp describe-user-pool-domain --domain "$COGNITO_DOMAIN_NAME" | grep CloudFrontDistribution | cut -d \" -f4)
-          echo "CLOUDFRONT_DOMAIN_NAME=$CLOUDFRONT_DOMAIN_NAME" >> $GITHUB_OUTPUT
-        id: deployed-infrastructure
-      - name: Deploy production DNS infrastructure
-        shell: bash
-        run: |
-          sam deploy --stack-name ${{ env.PROD_DNS_STACK_NAME }} \
-            --template-file ${{ env.DNS_TEMPLATE_NAME }} \
-            --region ${{ secrets.AWS_REGION }} \
-            --no-fail-on-empty-changeset \
-            --capabilities CAPABILITY_NAMED_IAM \
-            --parameter-overrides 'CloudFrontDomainName=${{ steps.deployed-infrastructure.outputs.CLOUDFRONT_DOMAIN_NAME }} CognitoDomain=${{ steps.deployed-infrastructure.outputs.COGNITO_DOMAIN_NAME }}'
 
   bump:
     name: Bump the version number and tag the commit

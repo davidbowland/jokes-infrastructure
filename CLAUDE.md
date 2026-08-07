@@ -12,7 +12,6 @@ reviewable.
 - `template.yaml` — the SAM/CloudFormation stack (primary artifact): Cognito user
   pool/client/identity pool, the Lambda artifact bucket, and pipeline/CloudFormation
   IAM roles.
-- `template-dns.yaml` — Route 53 / ACM records for the Cognito auth domain.
 - `deploy.sh`, `scripts/` — deployment and role-assumption helpers (shell).
 - No `src/`, no jest, no eslint. `lint` is `prettier --write .` only.
 
@@ -21,7 +20,7 @@ reviewable.
 - **Format:** `npm run lint` (prettier only).
 - **Validate template:** `sam validate --lint`
 - **Deploy (local/manual):** `./deploy.sh` — assumes the scoped pipeline role, then
-  `sam deploy` for both `template.yaml` and `template-dns.yaml`. CI deploys via
+  `sam deploy`s the testing stack. CI deploys test and production via
   `.github/workflows/pipeline.yaml`.
 - Never run a deploy that targets production without an explicit request.
 
@@ -41,9 +40,10 @@ reviewable.
 - **IAM least privilege:** scope actions to specific resource ARNs. Avoid
   `Resource: '*'` and broad `service:*` actions in runtime roles. Keep the scoped
   SAM policy-template style.
-- Do NOT, in this pass, change the `role/full-access` pipeline deploy role, the
-  Cognito OAuth implicit-flow client, or the Identity Pool's unauthenticated-access
-  configuration — those are explicitly out of scope (see work-order).
+- Do NOT, in this pass, change the `role/full-access` pipeline deploy role or the
+  Identity Pool's unauthenticated-access configuration — those are explicitly out
+  of scope (see work-order). (The Cognito hosted-UI OAuth client and its auth
+  domain were removed outright; `jokes-ui` signs in over SRP.)
 
 ## Hygiene
 
